@@ -61,27 +61,20 @@ FROM EMP;
 
 - 3 mệnh đề kết hợp: Union/Union All hợp 2 tập hợp Unit = UnionAll Distinct, INTERSECT giao 2 tập hợp, MINOR lấy tập hợp A -B.
 - Mệnh đề DML: INSERT, UPDATE, DELETE là 3 mệnh đề DML cần có COMMIT hoặc ROLL BACK để lưu lại trong DB.
-- CREATE
+- JOIN
 
 ``` SQL
-CREATE TABLE courses (
-    course_name VARCHAR2(100) NOT NULL,
-    rank NUMBER DEFAULT 1 NOT NULL ,
-    price NUMBER CHECK( price > 1000),
-    purchased_date DATE,
-    expired_date DATE
-);
-
-INSERT ALL
-INTO COURSES VALUES ('JS', 1, 2000, '01-JAN-24', '05-JUN-24')
-INTO COURSES VALUES ('HTML/CSS', 5, 1100, '01-FEB-24', '25-APR-24')
-INTO COURSES VALUES ('C#', 2, 2000, '01-JAN-24', '25-JUN-24')
-INTO COURSES VALUES ('C# nang cao', 3, 3900, '01-JUN-24', '20-OCT-24')
-INTO COURSES VALUES ('JAVA', 4, 2500, '01-JAN-24', '10-JUN-24')
-SELECT 1 FROM DUAL;
-
-SELECT * FROM COURSES;
+SELECT job_title, AVG(salary) 
+FROM employees 
+-- USING dùng cột trùng tên
+JOIN jobs USING(job_id) 
+-- hoặc sử dụng phép JOIN sau:
+-- NATURAL JOIN jobs
+GROUP BY job_title;
+-- NATURAL JOIN sẽ tự động sử dụng cột chung giữa 2 bảng mà không cần chỉ định
 ```
+
+- CREATE
 
 - INSERT: INSERT INTO <tên bảng> (<tên các cột>) VALUES (<GIÁ TRỊ TƯƠNG ỨNG>). Tên các cột nếu để trống sẽ đúng theo thứ tự trong bảng, có thể không thêm tất cả cột, cột không nêu ra mặc định có giá trị NULL
 
@@ -289,6 +282,20 @@ SELECT
     SUM(salary) OVER(PARTITION BY job_id)
     AS total_salary_by_job
 FROM employees e;
+
+-- đếm số sách mỗi tác giả có và chỉ lấy ra tác giả viết nhiều hơn 2 quyển sách.
+select * from (
+  select b.*,
+         count(*) over ( partition by author ) books_count
+  from   books b
+) where  books_count >= 2;
+--đếm số sách và sắp xếp theo thứ tự cho từng tác giả.
+select b.*, 
+       count(*) over (
+         partition by author
+         order by book_id
+       ) running_total
+from   books b;
 ```
 
 - Sequance:
@@ -317,6 +324,7 @@ CONNECT BY level <= 5;
 - CLOB (Character LOB) và NCLOB (National CLOB), dùng để lưu dữ liệu dạng chuỗi ký tự.
 - BFILE hay Binary File, dùng để lưu dữ liệu là các binary file. Thực chất là lưu 1 địa chỉ hay con trỏ đến file đó nằm bên ngoài Database (filesystem trên máy chủ).
 Một lưu ý quan trọng với kiểu dữ liệu dạng LOB đó là bạn không thể đặt cột có kiểu dữ liệu này làm Primary Key. Các kiểu dữ liệu LOB cũng không thể dùng trong các mệnh đề thông thường như ORDER BY, GROUP BY hay từ khóa DISTINCT.
+<<<<<<< HEAD
 - MERGE: Cập nhật dữ liệu
 
 ``` SQL
@@ -461,3 +469,51 @@ with rws as (
   )
   order  by w desc, d desc, l;
 ```
+=======
+- SELECT TOP N: Trong Oracle không có cú pháp SELECT TOP(N) như SQL Sẻver. Trong Oracle dùng ***fetch  first 3 rows only***
+
+``` SQL
+CREATE TABLE courses (
+    course_name VARCHAR2(100) NOT NULL,
+    rank NUMBER DEFAULT 1 NOT NULL ,
+    price NUMBER CHECK( price > 1000),
+    purchased_date DATE,
+    expired_date DATE
+);
+
+INSERT ALL
+INTO COURSES VALUES ('JS', 1, 2000, '01-JAN-24', '05-JUN-24')
+INTO COURSES VALUES ('HTML/CSS', 5, 1100, '01-FEB-24', '25-APR-24')
+INTO COURSES VALUES ('C#', 2, 2000, '01-JAN-24', '25-JUN-24')
+INTO COURSES VALUES ('C# nang cao', 3, 3900, '01-JUN-24', '20-OCT-24')
+INTO COURSES VALUES ('JAVA', 4, 1500, '01-JAN-24', '10-JUN-24')
+SELECT 1 FROM DUAL;
+
+SELECT * FROM COURSES;
+
+-- Tìm 3 khóa học đắt nhất
+-- Câu này sai vì WHERE xong mới ORDER BY
+select * from courses
+where  rownum <= 3
+order  by price desc;
+-- 2 câu dưới tương đương nhau
+select * from (
+  select * from courses
+  order by price desc
+) where  rownum <= 3;
+
+select * from courses
+order  by price desc
+fetch  first 3 rows only;
+
+-- Tìm 3 khóa có giá rẻ nhất
+-- Câu này trả về 3 khóa rẻ nhất tuy nhiên có 2 khóa bằng giá nhau như vậy thì bị bỏ qua 1 khóa
+select * from courses
+order  by price 
+fetch  first 3 rows only;
+-- Câu này trả về 4 khóa học vì có 2 khóa trùng giá nhau
+select course_name, price from courses
+order  by price
+fetch  first 3 rows with ties;
+```
+>>>>>>> 144a216b49ba46fe0e8dd88a0d5bf2a398ced4b4
