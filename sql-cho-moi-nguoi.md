@@ -318,13 +318,59 @@ CONNECT BY level <= 5;
 
 - Không thể dùng Sequance trong INSERT ALL vì bản chất INSERT ALL chỉ là 1 cấu lệnh nên Sequance trả về giá trị giống nhau.
 - View không phải là 1 bảng nên nó không chứa dữ liệu bên trong, nội dung của nó được định nghĩa là do câu lệnh truy vấn tạo nên. Dữ liệu trả về khi truy vấn View thực tế vẫn nằm ở bảng mà nó được lấy ra chứ không được chuyển vào hay copy sang View để lưu như nhiều người lầm tưởng.
--Kiểu dữ liệu “lớn” hay Large Object Data  (LOB). Đúng như tên gọi của mình, các kiểu dữ liệu này được dùng để lưu dữ liệu có kích thước lớn hơn dữ liệu text thông thường trên các bản ghi như ảnh, video, file PDF, v.v… .
-
-- BLOB hay Binary LOB dùng để lưu dữ liệu dạng Binary như file ảnh, âm thanh hay video.
-- CLOB (Character LOB) và NCLOB (National CLOB), dùng để lưu dữ liệu dạng chuỗi ký tự.
-- BFILE hay Binary File, dùng để lưu dữ liệu là các binary file. Thực chất là lưu 1 địa chỉ hay con trỏ đến file đó nằm bên ngoài Database (filesystem trên máy chủ).
+- Kiểu dữ liệu “lớn” hay Large Object Data  (LOB). Đúng như tên gọi của mình, các kiểu dữ liệu này được dùng để lưu dữ liệu có kích thước lớn hơn dữ liệu text thông thường trên các bản ghi như ảnh, video, file PDF, v.v… .
+  - BLOB hay Binary LOB dùng để lưu dữ liệu dạng Binary như file ảnh, âm thanh hay video.
+  - CLOB (Character LOB) và NCLOB (National CLOB), dùng để lưu dữ liệu dạng chuỗi ký tự.
+  - BFILE hay Binary File, dùng để lưu dữ liệu là các binary file. Thực chất là lưu 1 địa chỉ hay con trỏ đến file đó nằm bên ngoài Database (filesystem trên máy chủ).
 Một lưu ý quan trọng với kiểu dữ liệu dạng LOB đó là bạn không thể đặt cột có kiểu dữ liệu này làm Primary Key. Các kiểu dữ liệu LOB cũng không thể dùng trong các mệnh đề thông thường như ORDER BY, GROUP BY hay từ khóa DISTINCT.
-<<<<<<< HEAD
+
+- SELECT TOP N: Trong Oracle không có cú pháp SELECT TOP(N) như SQL Sẻver. Trong Oracle dùng ***fetch  first 3 rows only***
+
+``` SQL
+CREATE TABLE courses (
+    course_name VARCHAR2(100) NOT NULL,
+    rank NUMBER DEFAULT 1 NOT NULL ,
+    price NUMBER CHECK( price > 1000),
+    purchased_date DATE,
+    expired_date DATE
+);
+
+INSERT ALL
+INTO COURSES VALUES ('JS', 1, 2000, '01-JAN-24', '05-JUN-24')
+INTO COURSES VALUES ('HTML/CSS', 5, 1100, '01-FEB-24', '25-APR-24')
+INTO COURSES VALUES ('C#', 2, 2000, '01-JAN-24', '25-JUN-24')
+INTO COURSES VALUES ('C# nang cao', 3, 3900, '01-JUN-24', '20-OCT-24')
+INTO COURSES VALUES ('JAVA', 4, 1500, '01-JAN-24', '10-JUN-24')
+SELECT 1 FROM DUAL;
+
+SELECT * FROM COURSES;
+
+-- Tìm 3 khóa học đắt nhất
+-- Câu này sai vì WHERE xong mới ORDER BY
+select * from courses
+where  rownum <= 3
+order  by price desc;
+-- 2 câu dưới tương đương nhau
+select * from (
+  select * from courses
+  order by price desc
+) where  rownum <= 3;
+
+select * from courses
+order  by price desc
+fetch  first 3 rows only;
+
+-- Tìm 3 khóa có giá rẻ nhất
+-- Câu này trả về 3 khóa rẻ nhất tuy nhiên có 2 khóa bằng giá nhau như vậy thì bị bỏ qua 1 khóa
+select * from courses
+order  by price 
+fetch  first 3 rows only;
+-- Câu này trả về 4 khóa học vì có 2 khóa trùng giá nhau
+select course_name, price from courses
+order  by price
+fetch  first 3 rows with ties;
+```
+
 - MERGE: Cập nhật dữ liệu
 
 ``` SQL
@@ -348,7 +394,7 @@ where not exists (
 );
 ```
 
-- PRIVOT: cHUYỂN 
+- PRIVOT: chuyển cột thành hàng
 
 ``` SQL
 create table match_results (
@@ -414,7 +460,7 @@ with rws as (
   );
   ```
 
-|     LOCATION      | JAN_MATCHES | JAN_HOME_POINTS |	JAN_AWAY_POINTS |	FEB_MATCHES |	FEB_HOME_POINTS | FEB_AWAY_POINTS | MAR_MATCHES | MAR_HOME_POINTS |	MAR_AWAY_POINTS |
+|     LOCATION      | JAN_MATCHES | JAN_HOME_POINTS | JAN_AWAY_POINTS | FEB_MATCHES | FEB_HOME_POINTS | FEB_AWAY_POINTS | MAR_MATCHES | MAR_HOME_POINTS | MAR_AWAY_POINTS |
 |:-----------------:|:-----------:|:---------------:|:---------------:|:-----------:|:---------------:|:---------------:|:-----------:|:---------------:|:---------------:|
 | Emirate           | 0           | -               | -               | 0           | -               | -               | 1           | 0               | 3               |
 | Santiago Bernabeu | 0           | -               | -               | 0           | -               | -               | 1           | 1               | 1               |
@@ -469,51 +515,3 @@ with rws as (
   )
   order  by w desc, d desc, l;
 ```
-=======
-- SELECT TOP N: Trong Oracle không có cú pháp SELECT TOP(N) như SQL Sẻver. Trong Oracle dùng ***fetch  first 3 rows only***
-
-``` SQL
-CREATE TABLE courses (
-    course_name VARCHAR2(100) NOT NULL,
-    rank NUMBER DEFAULT 1 NOT NULL ,
-    price NUMBER CHECK( price > 1000),
-    purchased_date DATE,
-    expired_date DATE
-);
-
-INSERT ALL
-INTO COURSES VALUES ('JS', 1, 2000, '01-JAN-24', '05-JUN-24')
-INTO COURSES VALUES ('HTML/CSS', 5, 1100, '01-FEB-24', '25-APR-24')
-INTO COURSES VALUES ('C#', 2, 2000, '01-JAN-24', '25-JUN-24')
-INTO COURSES VALUES ('C# nang cao', 3, 3900, '01-JUN-24', '20-OCT-24')
-INTO COURSES VALUES ('JAVA', 4, 1500, '01-JAN-24', '10-JUN-24')
-SELECT 1 FROM DUAL;
-
-SELECT * FROM COURSES;
-
--- Tìm 3 khóa học đắt nhất
--- Câu này sai vì WHERE xong mới ORDER BY
-select * from courses
-where  rownum <= 3
-order  by price desc;
--- 2 câu dưới tương đương nhau
-select * from (
-  select * from courses
-  order by price desc
-) where  rownum <= 3;
-
-select * from courses
-order  by price desc
-fetch  first 3 rows only;
-
--- Tìm 3 khóa có giá rẻ nhất
--- Câu này trả về 3 khóa rẻ nhất tuy nhiên có 2 khóa bằng giá nhau như vậy thì bị bỏ qua 1 khóa
-select * from courses
-order  by price 
-fetch  first 3 rows only;
--- Câu này trả về 4 khóa học vì có 2 khóa trùng giá nhau
-select course_name, price from courses
-order  by price
-fetch  first 3 rows with ties;
-```
->>>>>>> 144a216b49ba46fe0e8dd88a0d5bf2a398ced4b4
