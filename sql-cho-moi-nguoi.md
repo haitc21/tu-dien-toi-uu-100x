@@ -317,3 +317,147 @@ CONNECT BY level <= 5;
 - CLOB (Character LOB) và NCLOB (National CLOB), dùng để lưu dữ liệu dạng chuỗi ký tự.
 - BFILE hay Binary File, dùng để lưu dữ liệu là các binary file. Thực chất là lưu 1 địa chỉ hay con trỏ đến file đó nằm bên ngoài Database (filesystem trên máy chủ).
 Một lưu ý quan trọng với kiểu dữ liệu dạng LOB đó là bạn không thể đặt cột có kiểu dữ liệu này làm Primary Key. Các kiểu dữ liệu LOB cũng không thể dùng trong các mệnh đề thông thường như ORDER BY, GROUP BY hay từ khóa DISTINCT.
+- MERGE: Cập nhật dữ liệu
+
+``` SQL
+merge into it_employees i
+using employees e ON (i.emp_id = e.emp_id)
+when matched then
+    update set
+        i.emp_name = e.emp_name,
+        i.job_id = e.job_id,
+        i.salary = e.salary,
+when not matched then
+    insert (i.emp_id, i.emp_name, i.job_id, i.salary)
+    values (e.emp_id, e.emp_name, e.job_id, e.salary)
+    where  e.job_id = 'IT';
+    
+    -- xÓA BẢN GHI ĐÃ BỊ XÓA Ở BẢNG GỐC
+delete from it_employees i 
+where not exists (
+    select emp_id from employees e
+    where e.emp_id = i.emp_id
+);
+```
+
+- PRIVOT: cHUYỂN 
+
+``` SQL
+create table match_results (
+  match_date       date,
+  location         varchar2(20),
+  home_team_name   varchar2(20),
+  away_team_name   varchar2(20),
+  home_team_points integer,
+  away_team_points integer
+);
+insert into match_results values ( date'2018-01-01', 'Old Trafford', 'Manchester United', 'Liverpool', 3, 0 );
+insert into match_results values ( date'2018-01-01', 'Stamford Bridge', 'Chelsea', 'Arsenal', 1, 1 );
+insert into match_results values ( date'2018-02-01', 'Camp Nou', 'Barcelona', 'Real Madrid', 0, 3 );
+insert into match_results values ( date'2018-03-01', 'Santiago Bernabeu', 'Real Madrid', 'Atletico Madrid', 1, 1 );
+insert into match_results values ( date'2018-03-02', 'Emirate', 'Arsenal', 'Manchester United', 0, 3 );
+commit;
+select * from match_results;
+-- Tính số trận đâu tại các sân
+select location, count (*)
+from   match_results
+group  by location;
+-- Biểu diễn dạng cột
+-- 3 câu sau tương đương
+select 
+    count ( DECODE(location,'Old Trafford',1)) Old_Trafford,
+    count ( DECODE(location,'Camp Nou',1) ) Campnou, 
+    count ( DECODE(location,'Stamford Bridge',1) ) Stamford_Bridge,
+    count ( DECODE(location,'Santiago Bernabeu',1) ) Santiago_Bernabeu
+from   match_results;
+
+select 
+    count ( case when location = 'Old Trafford' then 1 end ) Old_Trafford,
+    count ( case when location = 'Camp Nou' then 1 end ) Campnou, 
+    count ( case when location = 'Stamford Bridge' then 1 end ) Stamford_Bridge,
+    count ( case when location = 'Santiago Bernabeu' then 1 end ) Santiago_Bernabeu
+from   match_results;
+
+with ml as (
+  select location from match_results
+) select * from ml
+  pivot (
+    count(location) for location in (
+      'Old Trafford', 'Camp Nou', 'Stamford Bridge', 'Santiago Bernabeu'
+    )
+  );
+```
+
+- Sử dụng privot trên nhiều cột
+
+``` SQL
+with rws as (
+  select location, to_char ( match_date, 'MON' ) match_month ,
+         home_team_points, away_team_points
+  from   match_results
+) select * from rws
+  pivot (
+    count (*) matches, 
+    sum ( home_team_points ) home_points,
+    sum ( away_team_points ) away_points
+    for match_month in (
+      'JAN' jan, 'FEB' feb, 'MAR' mar
+    )
+  );
+  ```
+
+|     LOCATION      | JAN_MATCHES | JAN_HOME_POINTS |	JAN_AWAY_POINTS |	FEB_MATCHES |	FEB_HOME_POINTS | FEB_AWAY_POINTS | MAR_MATCHES | MAR_HOME_POINTS |	MAR_AWAY_POINTS |
+|:-----------------:|:-----------:|:---------------:|:---------------:|:-----------:|:---------------:|:---------------:|:-----------:|:---------------:|:---------------:|
+| Emirate           | 0           | -               | -               | 0           | -               | -               | 1           | 0               | 3               |
+| Santiago Bernabeu | 0           | -               | -               | 0           | -               | -               | 1           | 1               | 1               |
+| Camp Nou          | 0           | -               | -               | 1           | 0               | 3               | 0           | -               | -               |
+
+- UNPRIVOT: Chuyển hàng thành cột (ngược với PRIVOT)
+
+``` SQL
+-- chuyển tên đội đá sân nhà và sân sách thành một cột duy nhất,
+-- 2 câu lệnh sau tương đương
+select match_date, location, 'HOME' home_or_away, home_team_name team
+from   match_results
+union  all
+select match_date, location, 'AWAY' home_or_away, away_team_name team
+from   match_results
+order  by match_date, location, home_or_away;
+
+select match_date, location, home_or_away, team 
+from   match_results
+unpivot (
+  team for home_or_away in ( 
+    home_team_name as 'HOME', away_team_name as 'AWAY'
+  )
+)
+order  by match_date, location, home_or_away;
+-- hiển thị 1 bảng kết quả tất cả các trận đấu, hiển thị mỗi đội xem số trận thắng thua hoặc hòa
+with rws as (
+  select home_team_name, away_team_name, 
+         case
+           when home_team_points > away_team_points then 'WON'
+           when home_team_points < away_team_points then 'LOST'
+           else 'DRAW'
+         end home_team_result,
+         case
+           when home_team_points < away_team_points then 'WON'
+           when home_team_points > away_team_points then 'LOST'
+           else 'DRAW'
+         end away_team_result
+  from   match_results
+) select team, w, d, l 
+  from   rws
+  unpivot (
+    ( team, result ) for home_or_away in ( 
+      ( home_team_name, home_team_result ) as 'HOME', 
+      ( away_team_name, away_team_result ) as 'AWAY'
+    )
+  ) pivot (
+    count (*), min ( home_or_away ) dummy
+    for result in (
+      'WON' W, 'DRAW' D, 'LOST' L
+    )
+  )
+  order  by w desc, d desc, l;
+```
