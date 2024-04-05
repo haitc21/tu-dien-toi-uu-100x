@@ -41,7 +41,7 @@ SELECT * FROM pg_class WHERE relname = 'wecommit_test';
   - Quy hoạch DB: Tạo table space cho các bảng tùy hiệu năng, quy hoạch index...
   - Mở rộng bộ nhớ lưu trữ.
 
-# Cấu trúc vật lý
+# Kiến trúc vật lý
 
 ## File cấu hình kết nối
 
@@ -52,7 +52,7 @@ SELECT * FROM pg_class WHERE relname = 'wecommit_test';
 
 - /data/PG_VERSION: Thông tin phiên bản của CSDL.
 - **current_logfiles**: Thông tin file log hiện tại.
-- Thông tin tiến trình postmaster:
+- Thông tin tiến trình, lắng nghe kết nối postmaster:
   - /data/postmaster.opts
   - /data/postmaster.pid
 
