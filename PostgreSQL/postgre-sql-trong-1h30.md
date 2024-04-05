@@ -1,9 +1,10 @@
+# Mindmap kiến thức PostgreSQL trong 1h30 phút
+
 - [Nội dung bài học](https://wecommit.com.vn/mindmap-kien-thuc-postgresql-1h30ph/)
+- [Video](https://www.youtube.com/watch?v=OUlLQK_gN8k)
 - [Cài đặt xmind](https://xmind.app/)
 - [Mindmap](https://drive.google.com/file/d/1r9kYB-IGqz8nG01o971d3d2NR5C9kUQg/view)
 - [Script giả lập dữ liệu](https://drive.google.com/file/d/1r9kYB-IGqz8nG01o971d3d2NR5C9kUQg/view)
-- Video
-{@youtube: <https://www.youtube.com/watch?v=OUlLQK_gN8k}>
 
 # Kiến trúc Logic
 
