@@ -96,7 +96,6 @@ AS SELECT * FROM COUNTRIES;
 CREATE INDEX idx_first_name ON employees(first_name);
 ```
 
-
 - Xem chiến lược thực thi của câu lệnh **Tối ưu hiệu năng**:
   - Seq scan: Sequance Scan quét toàn bộ bảngg
   - cost: Chi phí để thực hiện câu lệnh.
@@ -105,3 +104,52 @@ CREATE INDEX idx_first_name ON employees(first_name);
 explain select * from employees;
 ```
 
+# Backup - Restore
+
+## Backup bảng
+
+- Export
+![Export data](images/backup-table1.png)
+![Export data](images/backup-table2.png)
+![Export data](images/backup-table3.png)
+
+## Restore bảng
+
+- Import
+![Export data](images/restore-table1.png)
+![Export data](images/restore-table2.png)
+
+## Backup DB
+
+![Export data](images/backup-db1.png)
+![Export data](images/backup-db2.png)
+
+## Restore DB
+
+![Export data](images/restore-db1.png)
+![Export data](images/restore-db2.png)
+
+# Công cụ làm việc
+
+## Psql (command line)
+
+``` cmd
+cd 'C:\Program Files\PostgreSQL\15\bin\'
+.\psql.exe -h localhost -d wecommit -U postgres
+<!-- danh sách db -->
+\l
+<!-- Danh sách bảng -->
+\dt
+<!-- Cấu trúc bảng -->
+\d countries
+<!-- Danh sách user -->
+\du
+<!-- Thoát -->
+\q
+```
+
+## PG Admin 4
+
+# DBeaver
+
+[Trang chủ DBever](https://dbeaver.io/)
