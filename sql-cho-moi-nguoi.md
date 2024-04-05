@@ -1,3 +1,7 @@
+# Khoá học – làm chủ SQL dành cho mọi người
+
+[Khoá học – làm chủ SQL dành cho mọi người](https://wecommit.com.vn/courses/khoa-hoc-lam-chu-sql-danh-cho-moi-nguoi/)
+
 ## DESCRIBE
 
  chi tiết các thông tin các cột trong bảng.
@@ -420,6 +424,7 @@ select course_name, price from courses
 order  by price
 fetch  first 3 rows with ties;
 ```
+
 ## MERGE
 
 - MERGE: Cập nhật dữ liệu
@@ -444,6 +449,7 @@ where not exists (
     where e.emp_id = i.emp_id
 );
 ```
+
 ## PRIVOT
 
 - PRIVOT: chuyển cột thành hàng
