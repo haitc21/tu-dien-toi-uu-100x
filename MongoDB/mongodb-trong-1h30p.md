@@ -70,3 +70,63 @@
 - Thay đổi Storage Engine
   - Vào file: C:\Program Files\MongoDB\Server\7.0\bin\mongod.cfg
   ![Thay đổi Storage Engine](images/storage-engine3.png)
+
+- Tổng quan kiến trúc
+![Kiến trúc giải thuật WireTiger](images/wire-tiger.png)
+  - Jonal: File lưu nhật ký sử dụng để khôi phục. Tương tự như Transaction Log File trong SQL Server, Wal Log trong PostgreSQL.
+
+## Các lệnh cơ bản
+
+- Xem danh sách database
+
+``` Mongosh
+ show databases
+ ```
+
+- Sử dụng DB nếu chưa có thì tạo mới
+
+ ``` Mongosh
+use wecommit
+ ```
+
+- Thêm dữ liệu vào collection
+
+ ```mongosh
+db.mycollection.insertOne({name: "Trần Hải", age: 29, city:"Hà Nội"})
+db.mycollection.insertMany([ {name: "Nguyễn Sơn", age: 30, city:"Hà Nội"}, {name: "Hà trang", phoneNumber: "0123456789"} ])
+ ```
+
+- Truy vấn dữ liệu trong collection
+
+ ``` Mongosh
+db.mycollection.find()
+db.mycollection.find().limit(2)
+db.mycollection.find({ phoneNumber: "0123456789"})
+db.mycollection.find({ age: { $lt: 26 }})
+db.mycollection.find( {$or: [ {age: 25}, {city:"Hà Nội"} ]} )
+ ```
+
+- Sắp xếp dữ liệu
+
+ ``` Mongosh
+ db.mycollection.find().sort({age: 1})
+  db.mycollection.find().sort({age: -1})
+ ```
+
+- Sửa dữ liệu
+
+ ``` Mongosh
+  db.mycollection.updateOne( {name: "Nguyễn Sơn"}, {$set: {city: "Bắc Giang"}} )
+  ```
+
+- Xóa dữ liệu
+
+```  Mongosh
+ db.mycollection.deleteOne({age:23})
+```
+
+- Xóa collection
+
+``` Mongosh
+db.mycollection.drop()
+```
