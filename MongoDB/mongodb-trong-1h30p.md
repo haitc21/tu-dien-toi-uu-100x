@@ -160,7 +160,7 @@ db.mycollection.createIndex({phoneNumber: 1, age: 1}, {name: "IDX_PHONENUMBER_AG
 db.mycollection.drop()
 ```
 
-## Tối ưu hiệu năng
+## <span id="optimize">Tối ưu hiệu năng</span>
 
 - Tạo dữ liệu giả lập
   - Tạo collection
