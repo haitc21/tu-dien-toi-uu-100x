@@ -298,6 +298,38 @@ db.customers.createIndex({ profession: 1, age: 1}, {name:"IDX_PROFESSION_AGE"})
 
 ![](images/optimize6.png)
 
+- Tạo index trên 2 trường age, profession nhwng chỉ query trên 1 trường age.
+
+``` mongosh
+db.customers.createIndex({age: 1, profession: 1 }, { name: "IDX_AGE_PROFESSION"})
+db.customers.find({age: {$lt: 70} }).explain("executionStats")
+```
+
+![](images/optimize8.png)
+
+- Query theo age không index:
+
+![](images/optimize11.png)
+
+- Tạo index trên 2 trường profession, age nhwng chỉ query trên 1 trường age (ngược lại).
+
+``` mongosh
+db.customers.dropIndex("IDX_AGE_PROFESSION")
+db.customers.createIndex({profession: 1,age: 1 }, { name: "IDX_PROFESSION_AGE"})
+db.customers.find({age: {$lt: 70} }).explain("executionStats")
+```
+
+![](images/optimize9.png)
+
+- Chỉ index trên age
+
+``` mongosh
+db.customers.createIndex({ age: 1 }, { name: "IDX_AGE"})
+db.customers.find({age: {$lt: 70} }).explain("executionStats")
+```
+
+![](images/optimize10.png)
+
 >### Kết luận
 
 - Index trên nhiều feild theo điều kiện query là hiệu quả nhất. - Nếu index **trùng với điều kiện** thì thứ tự feild không quan trọng. Ngược lại nếu chỉ có 1 vài feild trong index khớp với câu query thì thứ tự sẽ ảnh hưởng đến hiệu năng.
