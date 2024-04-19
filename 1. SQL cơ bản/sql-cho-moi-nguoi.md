@@ -119,7 +119,7 @@ INSERT INTO job_history
 SELECT employee_id,
 hire_date, ADD_MONTHS(hire_date, 10),
 job_id, department_id FROM employees
-WHERE employee_idINn (97, 98, 99);
+WHERE employee_id IN (97, 98, 99);
 ```
 
 #### Update
@@ -194,7 +194,8 @@ ADD CONSTRAINT fk_supplier
   FOREIGN KEY (supplier_id)
   REFERENCES supplier(supplier_id)
   ON DELETE CASCADE;
-Ta thấy câu lệnh xóa bản ghi bên trên đã thực hiện thành công và bản ghi trên bảng con cũng tự động được xóa theo bảng cha nhờ điều kiện ON DELETE CASCADE.
+
+--Ta thấy câu lệnh xóa bản ghi bên trên đã thực hiện thành công và bản ghi trên bảng con cũng tự động được xóa theo bảng cha nhờ điều kiện ON DELETE CASCADE.
 
 DELETE FROM supplier WHERE supplier_id = 10;
 SELECT * FROM products WHERE supplier_id = 10;
@@ -273,7 +274,7 @@ select * from employees
 where exists ( select null from DUAL );
 ```
 
-## Common Table Expression
+## Common Table Expression (CTE)
 
 - Common Table Expression cho phép người dùng đặt tên cho 1 đoạn truy vấn trong SQL. Sau đó ta có thể sử dụng lại nó ở bất kỳ đâu trong câu lệnh truy vấn.
 
@@ -295,7 +296,7 @@ where  c.minimum_quantity < (
 );
 
 -- Sử dụng Common Table Expression
-with book_counts as (
+WITH book_counts as (
   select b.category, count(*) c
   from   books b
   group  by b.category
@@ -312,6 +313,7 @@ from   book_counts bc
 where  bc.category = c.category_name
 );
 ```
+>**NOTE**: không JOIN nhiều CTE trong 1 câu lệnh, không dùng truy vấn trên dữ liệu dạng JSON. Nên dùng Temporary Table (bảng tạm) để thay thế trong 2 trường hợp trên.
 
 ## OVER, PARTITION BY
 
