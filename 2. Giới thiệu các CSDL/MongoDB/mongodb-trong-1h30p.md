@@ -4,12 +4,13 @@
 
 ## Thuật ngữ trong MongoDB
 
-| RDBMS (CSDL quan hệ) | MongoDB    | Khác                                    |
-|:--------------------:|:----------:|:---------------------------------------:|
-| Database             | Database   |                                         |
-| Table                | Collection |                                         |
-| Coloumn              | Feild      | Feild không cần định nghĩa kiểu dữ liệu |
-| Index                | Index      |                                         |
+| RDBMS (CSDL quan hệ) | MongoDB    | Khác                                                       |
+|:--------------------:|:----------:|:------------------------------------------------------------:|
+| Database             | Database   |                                                              |
+| Table                | Collection | Dữ liệu trong Collection không nhất thiết phải cùng cấu trúc |
+| Coloumn              | Feild      | Feild không cần định nghĩa kiểu dữ liệu                      |
+| Row                  | Documen    |                                                              |
+| Index                | Index      |                                                              |
 
 ## Các mô hình triển khai MongoDB
 
