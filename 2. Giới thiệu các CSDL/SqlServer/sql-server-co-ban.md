@@ -26,7 +26,7 @@
 
 - MSDB:
   - Sử dụng cho SQL Server Agent Service (là 1 Window Service quản lý các task theo lịch - job trong SQL Server).
-  - Sử dụng cho một số service quản trị khác: Đặt job, cấu hình giải pháp HA (Highe Availability ).
+  - Sử dụng cho một số service quản trị khác: Đặt job, cấu hình giải pháp HA (High Availability).
 - Resource Database (DB ẩn) trong thư mục \bin.
 
 >**NOTE**:  Khi backup DB sang instance khác **phải backup DB hệ thông** để đảm bảo hoạt động.
