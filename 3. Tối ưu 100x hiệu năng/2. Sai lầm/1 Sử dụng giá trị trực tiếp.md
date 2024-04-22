@@ -50,4 +50,4 @@ FROM v$sql
 WHERE sql_text LIKE '%select * from employees where emp_id=%';
 ```
 
-- Có thể thấy rằng cả 2 cách cùng trả về cùng kết qua nhưng cách 2 chỉ phân tích plan 1 lần duy nhất. Khi truy vấn này được thức hiện nhiều lần sẽ tiết kiệm đáng kể tài nguyên.
+- Có thể thấy rằng cả 2 cách cùng trả về cùng kết quả nhưng cách 2 chỉ phân tích plan 1 lần duy nhất. Khi truy vấn này được thức hiện nhiều lần sẽ tiết kiệm đáng kể tài nguyên.
