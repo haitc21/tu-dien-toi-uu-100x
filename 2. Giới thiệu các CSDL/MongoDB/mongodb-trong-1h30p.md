@@ -49,7 +49,7 @@
     - Document
       - Document con
 - Kiến trúc hoạt động
-  - MOngoDB được cài trên Server và được cấp phát tài nguyên.
+  - MongoDB được cài trên Server và được cấp phát tài nguyên.
   - Dữ liệu của DB được lưu vào Memory sau đó chuyển về File lưu trên Disk.
   - **Storage Engine**: Quyết định thành phần Memory và FIle, giải thuật tương tác giữa chúng:
     - WireTiger Storage Engine (Default)
@@ -153,6 +153,7 @@ db.mycollection.createIndex({phoneNumber: 1, age: 1}, {name: "IDX_PHONENUMBER_AG
 ```
 
 >**NOTE** Thứ tự feild trong index **rất quan trọng**, đặt biệt **feild đầu tiên** khi query có thể không sử dụng. Như IDX_PHONENUMBER_AGE khi query điều kiện với age sẽ không được sử dụng và giải thuật vẫn sẽ quét toàn bộ collection (COLLSCAN).
+
 >**NOTE** index trên nhiều feild và đúng thứ tự trong điều kiện trong câu query thì sẽ có hiệu quả hơn nhiều so với index trên 1 feild.
 
 - Xóa collection
@@ -268,6 +269,8 @@ db.customers.find({ age: { $lt: 70 }, profession: "Doctor" }).explain("execution
  ```
 
  ![](images/optimize4.png)
+
+ >**Giải thích**: Do điều kiện query trên 2 trường age và profession nên khi chỉ có IDX_AGE thì DB sẽ quét index IDX_AGE lấy ra ngời ít hơn 70 tuổi sau đó vẫn COLLSCAN quét toàn bộ bảng để tìm người là bác sỹ => chậm hơn hi không có index.
 
 - Xóa index IDX_AGE
 

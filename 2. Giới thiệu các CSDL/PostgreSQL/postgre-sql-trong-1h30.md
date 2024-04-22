@@ -69,21 +69,22 @@ SELECT * FROM pg_class WHERE relname = 'wecommit_test';
 
 - Chứa dữ liệu của các Database: bảng, index, shema...
 
-## thư mục /data/global
+## Thư mục /data/global
 
 - Chứa các object sử dụng chung cho toàn bộ DataBase Cluster.
 
-## thư mục /data/log
+## Thư mục /data/log
 
 - Chưa các file log của Database.
 
-## thư mục /data/pg_wal
+## Thư mục /data/pg_wal
 
 - Chứa các file lưu thông tin thay đổi của DB.
 - Sử dụng để **khôi phục khi có sự cố**.
 
 # Làm việc với PostgreSQL
 
+- **PL/pgSQL** (Procedural Language/Structured Query Language) là ngôn ngữ lập trình chính trong PostgreSQL, tương tự như PL/SQL trong Oracle
 - Tạo bảng mới từ 1 bảng có sắn
 
 ``` SQL
@@ -98,7 +99,7 @@ CREATE INDEX idx_first_name ON employees(first_name);
 ```
 
 - Xem chiến lược thực thi của câu lệnh **Tối ưu hiệu năng**:
-  - Seq scan: Sequance Scan quét toàn bộ bảngg
+  - Seq scan: Sequance Scan quét toàn bộ bảng.
   - cost: Chi phí để thực hiện câu lệnh.
 
 ``` SQL

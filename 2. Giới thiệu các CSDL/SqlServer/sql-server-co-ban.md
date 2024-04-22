@@ -14,7 +14,7 @@
     - Login.
 
   - Bản chất **dữ liệu không nằm ở System Databas** mà nằm ở **Resource DataBase**.
-- Model Database: Lưu trữ template để tạo DB cho nhan.
+- Model Database: Lưu trữ template để tạo DB cho nhanh.
 - **TampDB Database**:
 
   - Được tạo lại mỗi lần tạo DB: Không cần Recovery, Backup.
@@ -25,8 +25,8 @@
     - **Tempory table có thể tối ưu**: Index...
 
 - MSDB:
-  - Sử dụng cho SQL Server AgentService.
-  - Sử dụng cho một số service quản trị khác: Đặt job, Cấu hình giải pháp HA.
+  - Sử dụng cho SQL Server Agent Service (là 1 Window Service quản lý các task theo lịch - job trong SQL Server).
+  - Sử dụng cho một số service quản trị khác: Đặt job, cấu hình giải pháp HA (Highe Availability ).
 - Resource Database (DB ẩn) trong thư mục \bin.
 
 >**NOTE**:  Khi backup DB sang instance khác **phải backup DB hệ thông** để đảm bảo hoạt động.
@@ -51,6 +51,7 @@ Tất cả DB đều bao gồm 2 loại file:
     - Có thể thay đổi định dạng mặc định NDF.
 
 >**NOTE**: Trong các dự án lớn có thể có nhiều Data File (nên làm). Nhóm các file NDF cùng logic ví dụ: Sale vào 1 NDF, HR vào 1 NDF khác. Tất cả dữ liệu của Sale được đổ cùng vào 1 nươi là File Group.
+
 >**NOTE**: **Không nên lưu dữ liệu người dùng vào MDF** Khi tạo DB tạo các File Group \>  NDF \> Khi tạo bảng chỉ định table đó ở FIle Group nào.
 ![Tạo file group](images/ndf1.png)
 ![Tạo data file](images/ndf2.png)
@@ -72,9 +73,9 @@ CREATE TABLE Employees (
 
 - Phân tích cú pháp và ngữ nghĩa: Kiểm tra cú pháp đã đúng chưa. có quyền truy cập vào các bảng, cột không? Nếu sai sẽ dừng việc thực thi và đưa cảnh báo cho người dùng.
 - Kiểm tra chiến lược thực thi (tương tự như map sẽ tìm ra cách có chi phí thấp nhất). Có 2 trường hợp:
-  - Nếu câu lệnh đã từng thực hiện thì sẽ lấy chiến lược thực thi cũ. **NOTE** SQL Server sẽ so sánh text của câu lệnh (Tính cả dấu xuống dòng).
+  - Nếu câu lệnh đã từng thực hiện thì sẽ lấy chiến lược thực thi cũ. **NOTE** SQL Server sẽ so sánh text của câu lệnh giống nhau 100% (Tính cả dấu xuống dòng).
   - Nếu chưa có thì sẽ phân tích và đưa ra chiến lược thực thi.
-- thực thi câu lệnh theo chiến lược đã phân tích.
+- Thực thi câu lệnh theo chiến lược đã phân tích.
 
 ``` SQL
 -- Truy vấn chiến lược thực thi các câu lệnh đã thực thi

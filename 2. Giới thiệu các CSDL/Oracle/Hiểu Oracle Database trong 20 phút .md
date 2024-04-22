@@ -45,5 +45,5 @@ Gồm 2 phần:
 - Paramester File: Lưu thông tin cấu hình DB.
 - Backup File
 - Archive Log File: Bản sao thông tin của Redo Log FIle. Bởi vì Redo Log hoạt động theo cơ chế xoay vòng nên có thể bị ghi đè.
-- Password File: Lưu thông tin của User Quản trị.Cần lưu thông tin User quản trị vì không thể lưu thông tin User quản trị trong DB vì khi tắt DB thì không xác thực được.
+- Password File: Lưu thông tin của User Quản trị (SYS).Cần lưu thông tin User quản trị vì không thể lưu thông tin User quản trị trong DB vì khi tắt DB thì không xác thực được.
 - Alert Log, Trace File: Lưu thông tin cảnh báo.
