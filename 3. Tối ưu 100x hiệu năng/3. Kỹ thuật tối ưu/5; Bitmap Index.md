@@ -3,8 +3,9 @@
 ## Bitmap Index
 
 - Thuật toán: Sẽ dàn ngang giá trị của cột được đánh Bitmap Index ra và cột được dàn đó sẽ có giá trị là 0 hoặc 1 tướng ứng giá trị cột trong bảng. Ví dụ trường gênrá(giới trính) chỉ có 2 giá trị male và female thì bitmap Index có dạng:
+
 | Name | Male | female |
-|:----:|:----:|:----:-:|
+|:----:|:----:|:------:|
 | Hải  | 1    | 0      |
 | Linh | 0    | 1      |
 
