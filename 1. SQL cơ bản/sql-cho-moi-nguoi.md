@@ -371,6 +371,56 @@ CREATE PRIVATE TEMPORARY TABLE temp_table (
 ) ON COMMIT PRESERVE ROWS;
 ```
 
+- Sử dụng temp tbale tỏng Procedure
+
+``` sql
+CREATE OR REPLACE PROCEDURE query_emp_using_temp_table(
+    emp_cursor OUT SYS_REFCURSOR
+)
+AS
+    table_exists NUMBER;
+BEGIN
+    -- Kiểm tra xem temp_dept đã tồn tại chưa
+    SELECT COUNT(*)
+    INTO table_exists
+    FROM user_tables
+    WHERE table_name = 'TEMP_DEPT' AND temporary = 'Y';
+
+    -- Nếu temp_dept chưa tồn tại, tạo mới
+    IF table_exists = 0 THEN
+        EXECUTE IMMEDIATE 'CREATE GLOBAL TEMPORARY TABLE temp_dept (
+            deptno NUMBER,
+            dname VARCHAR2(50)
+        ) ON COMMIT DELETE ROWS';
+    END IF;
+
+    -- Insert dữ liệu từ bảng dept vào bảng tạm temp_dept
+    INSERT INTO temp_dept (deptno, dname)
+    SELECT deptno, dname
+    FROM dept;
+
+    -- Select từ bảng emp với điều kiện join với temp_dept và lưu vào emp_cursor
+    OPEN emp_cursor FOR
+    SELECT e.empno, e.ename
+    FROM emp e
+    JOIN temp_dept d ON e.deptno = d.deptno;
+
+    -- Xóa dữ liệu trong bảng tạm sau khi sử dụng xong (không cần DELETE vì ON COMMIT DELETE ROWS)
+END;
+/
+```
+
+``` sql
+VARIABLE emp_cursor REFCURSOR;
+BEGIN
+    query_emp_using_temp_table(:emp_cursor);
+END;
+/
+
+PRINT emp_cursor;
+
+```
+
 ## OVER, PARTITION BY
 
 - Mệnh đề OVER sẽ nhóm các hàng bản ghi lại với nhau, thực hiện tính toán trên các nhóm đó và trả về kết quả trên từng hàng.
