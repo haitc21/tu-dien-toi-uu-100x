@@ -214,7 +214,7 @@ DROP TABLE supplier CASCADE CONSTRAINTS;
 - Câu truy vấn nằm trong mệnh đề FROM được gọi là Inline View (hay Derived Table theo thuật ngữ của các hệ quản trị  CSDL khác).
 - Sub Query là 2 câu query lồng nhau.
 - Correlated SubQuery là câu sub query mà câu query còn sử dụng điều kiện ở trong câu query cha.
-- Trong sub query nên query con trả về single value thì có thể dùng toán tử ( =, > , <, >=, <=, <>), còn nến trả về tập hợp thì phải dùng toán tử IN, NOT IN, > hoặc < ALL, > hoặc < ANY, EXiSTS.
+- Trong sub query nên query con trả về single value thì có thể dùng toán tử ( =, > , <, >=, <=, <>), còn nến trả về tập hợp thì phải dùng toán tử IN, NOT IN, ALL, ANY, EXiSTS.
 
 ``` SQL
 -- Sub Query
@@ -260,6 +260,8 @@ SELECT *
 FROM employees
 WHERE salary > COALESCE((SELECT salary FROM employees WHERE name = 'John'), -1);
 ```
+
+>COALESCE sẽ trả về giá trị đầu tiên khác NULL trong các params.
 
 ## EXiSTS
 
@@ -313,7 +315,61 @@ from   book_counts bc
 where  bc.category = c.category_name
 );
 ```
+
+- Lưu trữ dữ liệu trên memorry.
+- Dữ liệu chỉ có thể truy xuất trong cùng 1 câu lệnh. tức là nếu sau dấu ; kể cả cùng tran cũng gặp lỗi.
+
 >**NOTE**: không JOIN nhiều CTE trong 1 câu lệnh, không dùng truy vấn trên dữ liệu dạng JSON. Nên dùng Temporary Table (bảng tạm) để thay thế trong 2 trường hợp trên.
+
+## Bảng tạm (Temporary Table)
+
+- Ổ cứng (Disk): Bảng tạm được lưu trữ trên đĩa giống như các bảng bình thường. Oracle sử dụng không gian đĩa để lưu trữ dữ liệu trong bảng tạm.
+- Tablespace tạm thời: Dữ liệu của bảng tạm được lưu trữ trong một tablespace tạm thời. Mỗi session có thể có dữ liệu riêng biệt trong bảng tạm này, và dữ liệu sẽ bị xóa khi session kết thúc (hoặc khi giao dịch kết thúc nếu sử dụng ON COMMIT DELETE ROWS).
+- temp table có nhiều điểm giống với table bình thường: Có thể sử dụng kỹ thuật tối ưu như Index,
+
+``` sql
+CREATE GLOBAL TEMPORARY TABLE temp_table (
+    id NUMBER,
+    name VARCHAR2(50)
+) ON COMMIT PRESERVE ROWS;
+
+-- Giao dịch 1 bắt đầu
+INSERT INTO temp_table (id, name)
+VALUES (1, 'John Doe');
+
+-- Commit giao dịch 1
+COMMIT;
+```
+
+``` sql
+-- Giao dịch 2 bắt đầu
+-- vấn ra 1 bản ghi
+SELECT * FROM temp_table;
+```
+
+- Có 2 config khi commit:
+  - COMMIT **PRESERVE** ROWS: Sau khi commit dữ liệu trong temp table vẫn được lưu và có thể truy vấn ở các tran khác trong cùng 1 session.
+  - COMMIT **DELETE** ROWS: Sau commit là xóa hết dữ liệu
+- tạo bảng tạm từ câu SELECT
+
+``` sql
+-- Tạo bảng tạm và chèn dữ liệu từ một câu truy vấn SELECT
+CREATE GLOBAL TEMPORARY TABLE temp_table
+ON COMMIT PRESERVE ROWS
+AS
+SELECT id, name
+FROM employees
+WHERE department_id = 10;
+```
+
+- Nếu để scope của bảng tạm là **global** thì bảng sẽ tồn tại trong các session khác. Có thể để là **private** để lưu dữ liệu chỉ trong session hiện tại.
+
+``` sql
+CREATE PRIVATE TEMPORARY TABLE temp_table (
+    id NUMBER,
+    name VARCHAR2(50)
+) ON COMMIT PRESERVE ROWS;
+```
 
 ## OVER, PARTITION BY
 
