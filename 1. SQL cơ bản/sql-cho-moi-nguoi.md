@@ -388,6 +388,7 @@ BEGIN
 
     -- Nếu temp_dept chưa tồn tại, tạo mới
     IF table_exists = 0 THEN
+    --- cần sử dụng EXECUTE IMMEDIATE vì Oracle không cho phép chạy lệnh DDL trong 1 câu lệnh khác ở đây là procedure
         EXECUTE IMMEDIATE 'CREATE GLOBAL TEMPORARY TABLE temp_dept (
             deptno NUMBER,
             dname VARCHAR2(50)
@@ -405,7 +406,8 @@ BEGIN
     FROM emp e
     JOIN temp_dept d ON e.deptno = d.deptno;
 
-    -- Xóa dữ liệu trong bảng tạm sau khi sử dụng xong (không cần DELETE vì ON COMMIT DELETE ROWS)
+    -- vì cấu hình temp_dept là ON COMMIT DELETE ROWS nên chỉ cần commit là tự xóa bảng
+    commit;
 END;
 /
 ```
