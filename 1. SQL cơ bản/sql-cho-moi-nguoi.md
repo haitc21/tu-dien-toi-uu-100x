@@ -535,6 +535,14 @@ order  by price
 fetch  first 3 rows with ties;
 ```
 
+## Phân trang
+
+``` sql
+SELECT *
+FROM COURSES
+OFFSET (:pageIndex-1)*:pageSize ROWS FETCH NEXT :pageSize ROWS ONLY;
+```
+
 ## MERGE
 
 - MERGE: Cập nhật dữ liệu
