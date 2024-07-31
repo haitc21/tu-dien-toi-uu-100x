@@ -483,6 +483,8 @@ Kiểu dữ liệu “lớn” hay Large Object Data  (LOB). Đúng như tên g�
 - BLOB hay Binary LOB dùng để lưu dữ liệu dạng Binary như file ảnh, âm thanh hay video.
 - CLOB (Character LOB) và NCLOB (National CLOB), dùng để lưu dữ liệu dạng chuỗi ký tự.
 - BFILE hay Binary File, dùng để lưu dữ liệu là các binary file. Thực chất là lưu 1 địa chỉ hay con trỏ đến file đó nằm bên ngoài Database (filesystem trên máy chủ).
+- Bảng có cột kiểu LOB thì các cột bình thường ở Segment riêng và cột LOB ở Segment riêng, thực tế bảng chỉ lưu địa chỉ đến SEgment LOB => Dung lượng LOB tách riêng với bảng.
+- Cột LOB có nhiều tham số cấu hình, **LOB turnning**.
 
 >Một lưu ý quan trọng với kiểu dữ liệu dạng LOB đó là bạn không thể đặt cột có kiểu dữ liệu này làm Primary Key. Các kiểu dữ liệu LOB cũng không thể dùng trong các mệnh đề thông thường như ORDER BY, GROUP BY hay từ khóa DISTINCT.
 
